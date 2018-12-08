@@ -105,9 +105,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private boolean isOldTransaction(Transaction transaction) {
 
         Instant transactionTime = transaction.getTimeStamp();
-//        Instant now = Instant.now();
-        Instant offSet = TimeUtil.getTimeOffset();
-        long duration = Duration.between(transactionTime, offSet).getSeconds();
+        Instant now = Instant.now();
+//        Instant offSet = TimeUtil.getTimeOffset();
+        long duration = Duration.between(transactionTime, now).getSeconds();
         return duration > CUT_OFF_SECONDS;
     }
 
