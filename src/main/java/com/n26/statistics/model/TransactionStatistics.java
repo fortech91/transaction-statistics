@@ -1,9 +1,8 @@
-package com.n26.model;
+package com.n26.statistics.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
-import javax.annotation.Generated;
 
 /**
  * @author FortunatusE
@@ -11,7 +10,8 @@ import javax.annotation.Generated;
  */
 
 @Data
-public class Statistic {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TransactionStatistics {
 
 	@JsonProperty("avg")
 	private String avg;
