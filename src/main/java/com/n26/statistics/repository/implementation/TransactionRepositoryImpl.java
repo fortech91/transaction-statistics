@@ -25,7 +25,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryImpl.class);
 
     private static final int CUT_OFF_SECONDS = 60;
-    private static int INITIAL_ARRAY_CAPACITY = 10000;
+    private static int INITIAL_ARRAY_CAPACITY = 1000;
 
     private AtomicReferenceArray<Transaction> transactionStore;
 
@@ -108,7 +108,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         Instant now = Instant.now();
 //        Instant offSet = TimeUtil.getTimeOffset();
         long duration = Duration.between(transactionTime, now).getSeconds();
-        return duration > CUT_OFF_SECONDS;
+        return duration >= CUT_OFF_SECONDS;
     }
 
     @Override
