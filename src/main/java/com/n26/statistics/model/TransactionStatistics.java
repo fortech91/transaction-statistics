@@ -1,10 +1,5 @@
 package com.n26.statistics.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
-
 import java.math.BigDecimal;
 
 /**
@@ -12,23 +7,63 @@ import java.math.BigDecimal;
  * @date 12/7/2018
  */
 
-@Data
-@Builder
+
 public class TransactionStatistics {
 
-	@JsonProperty("sum")
 	private BigDecimal sum;
-
-	@JsonProperty("avg")
 	private BigDecimal avg;
-
-	@JsonProperty("max")
 	private BigDecimal max;
-
-	@JsonProperty("min")
 	private BigDecimal min;
-
-	@JsonProperty("count")
 	private long count;
 
+
+	public BigDecimal getSum() {
+		return sum;
+	}
+
+	public void setSum(BigDecimal sum) {
+		this.sum = sum.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public BigDecimal getAvg() {
+		return avg;
+	}
+
+	public void setAvg(BigDecimal avg) {
+		this.avg = avg.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public BigDecimal getMax() {
+		return max;
+	}
+
+	public void setMax(BigDecimal max) {
+		this.max = max.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public BigDecimal getMin() {
+		return min;
+	}
+
+	public void setMin(BigDecimal min) {
+		this.min = min.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
+	public TransactionStatistics initialValue(){
+
+		setSum(new BigDecimal("0.00"));
+		setAvg(new BigDecimal("0.00"));
+		setMax(new BigDecimal("0.00"));
+		setMin(new BigDecimal("0.00"));
+		setCount(0L);
+		return this;
+	}
 }

@@ -1,8 +1,7 @@
 package com.n26.statistics.service;
 
 import com.n26.statistics.dto.TransactionDTO;
-import com.n26.statistics.model.Transaction;
-import com.n26.statistics.model.TransactionStatistics;
+import com.n26.statistics.dto.TransactionStatisticsDTO;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -14,7 +13,7 @@ public interface StatisticsService {
 
     HttpStatus addTransaction(TransactionDTO transaction);
 
-    TransactionStatistics getStatistics();
+    TransactionStatisticsDTO getStatistics();
 
     HttpStatus deleteTransactions();
 }

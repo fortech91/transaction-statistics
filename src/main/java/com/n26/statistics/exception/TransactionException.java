@@ -11,12 +11,13 @@ public class TransactionException extends RuntimeException {
 
     private HttpStatus status;
 
-    public TransactionException(HttpStatus status){
-        this.status = status;
-    }
-
     public TransactionException(String message){
         super(message);
+    }
+
+    public TransactionException(String message, HttpStatus status){
+        super(message);
+        this.status = status;
     }
 
     public TransactionException(String message, Throwable cause){

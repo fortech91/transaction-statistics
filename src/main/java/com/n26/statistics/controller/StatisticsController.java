@@ -1,6 +1,7 @@
 package com.n26.statistics.controller;
 
 import com.n26.statistics.dto.TransactionDTO;
+import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.model.TransactionStatistics;
 import com.n26.statistics.service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class StatisticsController {
     @GetMapping("/statistics")
     public ResponseEntity getTransactionStatistics(){
 
-        TransactionStatistics statistics = statisticsService.getStatistics();
+        TransactionStatisticsDTO statistics = statisticsService.getStatistics();
         return ResponseEntity.ok(statistics);
     }
 

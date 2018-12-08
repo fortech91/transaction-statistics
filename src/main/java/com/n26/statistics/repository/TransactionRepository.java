@@ -4,7 +4,6 @@ import com.n26.statistics.model.Transaction;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.stream.Stream;
 
 /**
  * @author FortunatusE
@@ -14,7 +13,7 @@ public interface TransactionRepository {
 
     void save(Transaction transaction);
 
-    Stream<Transaction> getTransactions();
+    List<Transaction> getTransactions();
 
     AtomicReferenceArray<Transaction> getTransactionStore();
 

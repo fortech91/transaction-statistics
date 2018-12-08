@@ -1,6 +1,7 @@
 package com.n26.statistics.service.implementation;
 
 import com.n26.statistics.dto.TransactionDTO;
+import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.exception.TransactionException;
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.model.TransactionStatistics;
@@ -17,8 +18,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.DoubleSummaryStatistics;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author FortunatusE
@@ -71,12 +72,11 @@ public class StatisticsServiceImpl implements StatisticsService {
             timeStamp = Instant.parse(transactionDTO.getTimeStamp());
         } catch (NumberFormatException | DateTimeParseException e) {
             logger.error("Could not parse data: {}", e.getMessage());
-            throw new TransactionException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new TransactionException("Could not parse data", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         if (isFutureDate(timeStamp)) {
-            logger.debug("Transaction date is in the future");
-            throw new TransactionException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new TransactionException("Transaction date ["+timeStamp+"] is in the future and discarded", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         logger.debug("Amount: {}", amount);
         logger.debug("Timestamp: {}", timeStamp);
@@ -87,7 +87,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private boolean isFutureDate(Instant instant) {
 
-        if (instant.isAfter(Instant.now())) {
+        Instant currentTime = Instant.now();
+        logger.debug("Current time: {}", currentTime);
+        if (instant.isAfter(currentTime)) {
             return true;
         }
         return false;
@@ -105,23 +107,25 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
     @Override
-    public TransactionStatistics getStatistics() {
+    public TransactionStatisticsDTO getStatistics() {
 
         logger.debug("Retrieving transaction statistics");
 
-        Stream<Transaction> transactions = transactionRepository.getTransactions();
-        logger.debug("Transactions length: {}", transactions.count());
+        List<Transaction> transactions = transactionRepository.getTransactions();
+        logger.debug("Transactions length: {}", transactions.size());
+        if(transactions.isEmpty()){
+            return convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
+        }
 
-        DoubleSummaryStatistics statistics = transactions.collect(Collectors.summarizingDouble(transaction -> transaction.getAmount().doubleValue()));
-        TransactionStatistics transactionStatistics = TransactionStatistics.builder()
-                .sum(new BigDecimal(statistics.getSum()).setScale(2, BigDecimal.ROUND_HALF_UP))
-                .avg(new BigDecimal(statistics.getAverage()).setScale(2, BigDecimal.ROUND_HALF_UP))
-                .max(new BigDecimal(statistics.getMax()).setScale(2, BigDecimal.ROUND_HALF_UP))
-                .min(new BigDecimal(statistics.getMin()).setScale(2, BigDecimal.ROUND_HALF_UP))
-                .count(statistics.getCount())
-                .build();
+        DoubleSummaryStatistics statistics = transactions.stream().collect(Collectors.summarizingDouble(transaction -> transaction.getAmount().doubleValue()));
+        TransactionStatistics transactionStatistics = new TransactionStatistics();
+        transactionStatistics.setSum(new BigDecimal(statistics.getSum()));
+        transactionStatistics.setAvg(new BigDecimal(statistics.getAverage()));
+        transactionStatistics.setMax(new BigDecimal(statistics.getMax()));
+        transactionStatistics.setMin(new BigDecimal(statistics.getMin()));
+        transactionStatistics.setCount(statistics.getCount());
 
-        return transactionStatistics;
+        return convertTransactionStatisticsModelToDto(transactionStatistics);
     }
 
     @Override
@@ -132,4 +136,14 @@ public class StatisticsServiceImpl implements StatisticsService {
         return HttpStatus.NO_CONTENT;
     }
 
+    private TransactionStatisticsDTO convertTransactionStatisticsModelToDto(TransactionStatistics transactionStatistics){
+
+        TransactionStatisticsDTO transactionStatisticsDTO = new TransactionStatisticsDTO();
+        transactionStatisticsDTO.setSum(transactionStatistics.getSum().toPlainString());
+        transactionStatisticsDTO.setAvg(transactionStatistics.getAvg().toPlainString());
+        transactionStatisticsDTO.setMax(transactionStatistics.getMax().toPlainString());
+        transactionStatisticsDTO.setMin(transactionStatistics.getMin().toPlainString());
+        transactionStatisticsDTO.setCount(transactionStatistics.getCount());
+        return transactionStatisticsDTO;
+    }
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.stream.Stream;
 
 /**
  * @author FortunatusE
@@ -41,7 +41,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         int index = getIndex();
         logger.debug("Next index: {}", index);
         transactionStore.set(index, transaction);
-        logger.info("Save transaction: {}", transaction);
+        logger.info("Saved transaction: {}", transaction);
     }
 
     private int getIndex() {
@@ -79,7 +79,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
 
     @Override
-    public Stream<Transaction> getTransactions() {
+    public List<Transaction> getTransactions() {
 
         logger.debug("Getting transactions");
 
@@ -96,7 +96,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 }
             }
         }
-        return transactions.stream();
+        return transactions;
     }
 
     private boolean isOldTransaction(Transaction transaction) {
