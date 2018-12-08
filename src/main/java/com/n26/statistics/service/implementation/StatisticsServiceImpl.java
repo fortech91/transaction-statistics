@@ -53,7 +53,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             logger.debug("Transaction is still young and will be added");
             transactionRepository.save(transaction);
             logger.info("Transaction has been saved");
-            return HttpStatus.ACCEPTED;
+            return HttpStatus.CREATED;
 
         } catch (TransactionException exception) {
             logger.error(exception.getMessage());
