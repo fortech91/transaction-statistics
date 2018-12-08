@@ -9,10 +9,12 @@ import org.springframework.http.HttpStatus;
  * @author FortunatusE
  * @date 12/7/2018
  */
-public interface TransactionService {
+public interface StatisticsService {
 
 
     HttpStatus addTransaction(TransactionDTO transaction);
 
     TransactionStatistics getStatistics();
+
+    HttpStatus deleteTransactions();
 }

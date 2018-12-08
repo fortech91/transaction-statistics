@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 public class Transaction {
 
     private BigDecimal amount;
-
     private Instant timeStamp;
+
+    public Transaction(BigDecimal amount, Instant timeStamp) {
+        this.amount = amount;
+        this.timeStamp = timeStamp;
+    }
 }

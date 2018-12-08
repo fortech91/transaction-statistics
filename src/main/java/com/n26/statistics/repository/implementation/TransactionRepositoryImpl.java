@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.stream.Stream;
 
 /**
  * @author FortunatusE
@@ -24,13 +24,13 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryImpl.class);
 
     private static final int CUT_OFF_SECONDS = 60;
-    private static final int INITIAL_ARRAY_CAPACITY = 62;
+    private static int INITIAL_ARRAY_CAPACITY = 62;
 
-    private final AtomicReferenceArray<Transaction> transactionRepository;
+    private AtomicReferenceArray<Transaction> transactionStore;
 
 
     public TransactionRepositoryImpl() {
-        this.transactionRepository = new AtomicReferenceArray<>(INITIAL_ARRAY_CAPACITY);
+        this.transactionStore = new AtomicReferenceArray<>(INITIAL_ARRAY_CAPACITY);
     }
 
     @Override
@@ -38,23 +38,68 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         logger.debug("Saving transaction: {}", transaction);
 
-        int index = IndexCounter.nextIndex();
+        int index = getIndex();
         logger.debug("Next index: {}", index);
-        transactionRepository.set(index, transaction);
+        transactionStore.set(index, transaction);
+        logger.info("Save transaction: {}", transaction);
     }
 
-    @Override
-    public void discardOldTransactions(){
+    private int getIndex() {
 
-        for(int i = 0; i < transactionRepository.length(); i++) {
-            Transaction transaction = transactionRepository.get(i);
-            if(isOldTransaction(transaction)){
-                transactionRepository.compareAndSet(i, transaction, null);
+        for (int index = 0; index < transactionStore.length(); index++) {
+            Transaction transaction = transactionStore.get(index);
+            if (transaction == null) {
+                return index;
             }
         }
+        int nextIndex = IndexCounter.nextIndex();
+
+        if (nextIndex == transactionStore.length()) {
+            //increase the capacity of the array
+            AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
+            transactionStore = newTransactionStore;
+        }
+        return nextIndex;
     }
 
-    private boolean isOldTransaction(Transaction transaction){
+    private AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
+
+        logger.debug("Creating new transaction store as existing is already filled up");
+
+        int arrayCapacity = existingStore.length() * 2;
+
+        AtomicReferenceArray<Transaction> newTransactionStore = new AtomicReferenceArray<Transaction>(arrayCapacity);
+
+        for (int index = 0; index < existingStore.length(); index++) {
+            Transaction transaction = existingStore.get(index);
+            newTransactionStore.set(index, transaction);
+        }
+        return newTransactionStore;
+    }
+
+
+    @Override
+    public Stream<Transaction> getTransactions() {
+
+        logger.debug("Getting transactions");
+
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+        for (int index = 0; index < transactionStore.length(); index++) {
+            Transaction transaction = transactionStore.get(index);
+            if (transaction != null) {
+                if (isOldTransaction(transaction)) {
+                    //discard the transaction by nullifying the reference
+                    transactionStore.compareAndSet(index, transaction, null);
+                } else {
+                    transactions.add(transaction);
+                }
+            }
+        }
+        return transactions.stream();
+    }
+
+    private boolean isOldTransaction(Transaction transaction) {
 
         Instant transactionTime = transaction.getTimeStamp();
         Instant now = Instant.now();
@@ -62,4 +107,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return duration > CUT_OFF_SECONDS;
     }
 
+    @Override
+    public AtomicReferenceArray<Transaction> getTransactionStore() {
+        return transactionStore;
+    }
+
+    @Override
+    public void deleteAllTransactions() {
+
+        logger.debug("Deleting all transactions");
+        for (int index = 0; index < transactionStore.length(); index++) {
+            transactionStore.set(index, null);
+        }
+        logger.warn("Deleted all transaction");
+    }
 }

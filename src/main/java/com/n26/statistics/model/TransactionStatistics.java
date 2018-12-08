@@ -2,7 +2,10 @@ package com.n26.statistics.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * @author FortunatusE
@@ -10,22 +13,22 @@ import lombok.Data;
  */
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class TransactionStatistics {
 
-	@JsonProperty("avg")
-	private String avg;
+	@JsonProperty("sum")
+	private BigDecimal sum;
 
-	@JsonProperty("min")
-	private String min;
+	@JsonProperty("avg")
+	private BigDecimal avg;
 
 	@JsonProperty("max")
-	private String max;
+	private BigDecimal max;
+
+	@JsonProperty("min")
+	private BigDecimal min;
 
 	@JsonProperty("count")
-	private int count;
-
-	@JsonProperty("sum")
-	private String sum;
+	private long count;
 
 }
