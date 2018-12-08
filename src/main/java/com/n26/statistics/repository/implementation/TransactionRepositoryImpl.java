@@ -55,6 +55,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
+            logger.debug("Reached length of array");
             //increase the capacity of the array
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
@@ -62,9 +63,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return nextIndex;
     }
 
-    private AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
+    private synchronized AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
 
-        logger.debug("Creating new transaction store as existing is already filled up");
+        logger.debug("Creating new transaction store as existing one is already filled up");
 
         int arrayCapacity = existingStore.length() * 2;
 
@@ -90,7 +91,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             if (transaction != null) {
                 if (isOldTransaction(transaction)) {
                     //discard the transaction by nullifying the reference
-                    transactionStore.compareAndSet(index, transaction, null);
+//                    transactionStore.compareAndSet(index, transaction, null);
+                    transactionStore.set(index, null);
                 } else {
                     transactions.add(transaction);
                 }
@@ -119,6 +121,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         for (int index = 0; index < transactionStore.length(); index++) {
             transactionStore.set(index, null);
         }
-        logger.warn("Deleted all transaction");
+        logger.warn("Deleted all transactions");
     }
 }
