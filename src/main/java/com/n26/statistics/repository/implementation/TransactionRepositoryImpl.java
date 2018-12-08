@@ -3,6 +3,7 @@ package com.n26.statistics.repository.implementation;
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.repository.TransactionRepository;
 import com.n26.statistics.util.IndexCounter;
+import com.n26.statistics.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -91,8 +92,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             if (transaction != null) {
                 if (isOldTransaction(transaction)) {
                     //discard the transaction by nullifying the reference
-//                    transactionStore.compareAndSet(index, transaction, null);
-                    transactionStore.set(index, null);
+                    transactionStore.compareAndSet(index, transaction, null);
+//                    transactionStore.set(index, null);
                 } else {
                     transactions.add(transaction);
                 }
@@ -104,8 +105,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private boolean isOldTransaction(Transaction transaction) {
 
         Instant transactionTime = transaction.getTimeStamp();
-        Instant now = Instant.now();
-        long duration = Duration.between(transactionTime, now).getSeconds();
+//        Instant now = Instant.now();
+        Instant offSet = TimeUtil.getTimeOffset();
+        long duration = Duration.between(transactionTime, offSet).getSeconds();
         return duration > CUT_OFF_SECONDS;
     }
 
