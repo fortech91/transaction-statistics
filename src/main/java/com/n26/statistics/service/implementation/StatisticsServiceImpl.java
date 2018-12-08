@@ -67,6 +67,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     /**
      * Converts the transaction DTO to a domain model
+     *
      * @param transactionDTO the dto to be converted
      * @return the domain model
      * @throws TransactionException if an error occurs during the conversion
@@ -85,7 +86,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         if (isFutureDate(timeStamp)) {
-            throw new TransactionException("Transaction date ["+timeStamp+"] is in the future and discarded", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new TransactionException("Transaction date [" + timeStamp + "] is in the future and discarded", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         logger.debug("Amount: {}", amount);
         logger.debug("Timestamp: {}", timeStamp);
@@ -98,10 +99,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         Instant currentTime = clock.instant();
         logger.debug("Current time: {}", currentTime);
-        if (instant.isAfter(currentTime)) {
-            return true;
-        }
-        return false;
+        return instant.isAfter(currentTime);
+
     }
 
 
@@ -116,13 +115,13 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
     @Override
-    public TransactionStatisticsDTO getStatistics() {
+    public synchronized TransactionStatisticsDTO getStatistics() {
 
         logger.debug("Retrieving transaction statistics");
 
         List<Transaction> transactions = transactionRepository.getTransactions();
         logger.debug("Transactions length: {}", transactions.size());
-        if(transactions.isEmpty()){
+        if (transactions.isEmpty()) {
             return convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
         }
 
@@ -144,7 +143,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         return HttpStatus.NO_CONTENT;
     }
 
-    private TransactionStatisticsDTO convertTransactionStatisticsModelToDto(TransactionStatistics transactionStatistics){
+    private TransactionStatisticsDTO convertTransactionStatisticsModelToDto(TransactionStatistics transactionStatistics) {
 
         TransactionStatisticsDTO transactionStatisticsDTO = new TransactionStatisticsDTO();
         transactionStatisticsDTO.setSum(transactionStatistics.getSum().toPlainString());
