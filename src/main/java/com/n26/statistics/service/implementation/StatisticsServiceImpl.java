@@ -115,7 +115,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
     @Override
-    public synchronized TransactionStatisticsDTO getStatistics() {
+    public TransactionStatisticsDTO getStatistics() {
 
         logger.debug("Retrieving transaction statistics");
 
