@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -33,10 +34,13 @@ public class StatisticsServiceImpl implements StatisticsService {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsServiceImpl.class);
 
     private final TransactionRepository transactionRepository;
+    private final Clock clock;
+
 
     @Autowired
-    public StatisticsServiceImpl(TransactionRepository transactionRepository) {
+    public StatisticsServiceImpl(TransactionRepository transactionRepository, Clock clock) {
         this.transactionRepository = transactionRepository;
+        this.clock = clock;
     }
 
     @Override
@@ -61,7 +65,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
-
+    /**
+     * Converts the transaction DTO to a domain model
+     * @param transactionDTO the dto to be converted
+     * @return the domain model
+     * @throws TransactionException if an error occurs during the conversion
+     */
     private Transaction convertTransactionDtoToModel(TransactionDTO transactionDTO) throws TransactionException {
 
         final BigDecimal amount;
@@ -87,7 +96,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private boolean isFutureDate(Instant instant) {
 
-        Instant currentTime = Instant.now();
+        Instant currentTime = clock.instant();
         logger.debug("Current time: {}", currentTime);
         if (instant.isAfter(currentTime)) {
             return true;
@@ -100,7 +109,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         logger.debug("Checking if transaction is older than last 60 secs");
         Instant timeStamp = transaction.getTimeStamp();
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         long duration = Duration.between(timeStamp, now).getSeconds();
         return duration > 60;
     }
@@ -124,7 +133,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         transactionStatistics.setMax(new BigDecimal(statistics.getMax()));
         transactionStatistics.setMin(new BigDecimal(statistics.getMin()));
         transactionStatistics.setCount(statistics.getCount());
-
         return convertTransactionStatisticsModelToDto(transactionStatistics);
     }
 
