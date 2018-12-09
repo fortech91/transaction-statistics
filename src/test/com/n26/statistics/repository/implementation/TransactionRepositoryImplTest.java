@@ -12,9 +12,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
 
-import static org.junit.Assert.*;
 
 /**
  * @author FortunatusE
@@ -33,7 +35,7 @@ public class TransactionRepositoryImplTest {
 
         @Bean
         TransactionRepository transactionRepository(){
-            return new TransactionRepositoryImpl();
+            return new TransactionRepositoryImpl(Clock.fixed(Instant.parse("2018-07-17T09:59:51.312Z"), ZoneOffset.UTC));
         }
     }
 
@@ -51,12 +53,38 @@ public class TransactionRepositoryImplTest {
     }
 
     @Test
-    public void getTransactions() throws Exception {
+    public void whenCalledForTransactions_thenReturnTransactionsWithinLast60Secs() throws Exception {
+
+
+        Transaction transaction1 = new Transaction(new BigDecimal("756.76"), Instant.parse("2018-07-17T09:59:01.312Z"));
+        Transaction transaction2 = new Transaction(new BigDecimal("976.76"), Instant.parse("2018-07-17T09:59:11.312Z"));
+        Transaction transaction3 = new Transaction(new BigDecimal("876.76"), Instant.parse("2018-07-17T09:59:21.312Z"));
+
+        transactionRepository.save(transaction1);
+        transactionRepository.save(transaction2);
+        transactionRepository.save(transaction3);
+
+        List<Transaction> transactions = transactionRepository.getTransactions();
+        assertThat(transactions).isNotEmpty().hasSize(3);
+
     }
 
 
     @Test
-    public void deleteAllTransactions() throws Exception {
+    public void whenCalledToDeleteTransactions_thenRemoveTransactionReferences() throws Exception {
+
+        Transaction transaction1 = new Transaction(new BigDecimal("796.76"), Instant.parse("2018-07-17T09:59:21.312Z"));
+        Transaction transaction2 = new Transaction(new BigDecimal("376.76"), Instant.parse("2018-07-17T09:59:28.312Z"));
+        Transaction transaction3 = new Transaction(new BigDecimal("976.76"), Instant.parse("2018-07-17T09:59:31.312Z"));
+
+        transactionRepository.save(transaction1);
+        transactionRepository.save(transaction2);
+        transactionRepository.save(transaction3);
+
+        transactionRepository.deleteAllTransactions();
+        List<Transaction> transactions = transactionRepository.getTransactions();
+        assertThat(transactions).isEmpty();
+
     }
 
 }

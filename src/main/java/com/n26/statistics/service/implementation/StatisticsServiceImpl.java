@@ -57,7 +57,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             }
             logger.debug("Transaction is still young and will be added");
             Transaction savedTransaction = transactionRepository.save(transaction);
-            logger.info("Transaction {} has been saved", savedTransaction);
+            logger.info("Added transaction: {}", savedTransaction);
             return HttpStatus.CREATED;
 
         } catch (TransactionException exception) {
@@ -83,7 +83,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             timeStamp = Instant.parse(transactionDTO.getTimeStamp());
         } catch (NumberFormatException | DateTimeParseException e) {
             logger.error("Could not parse data: {}", e.getMessage());
-            throw new TransactionException("Could not parse data", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new TransactionException("Could not parse transaction data", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         if (isFutureTime(timeStamp)) {

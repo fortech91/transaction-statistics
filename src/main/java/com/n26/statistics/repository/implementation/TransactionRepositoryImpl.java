@@ -5,8 +5,10 @@ import com.n26.statistics.repository.TransactionRepository;
 import com.n26.statistics.util.IndexCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,10 +28,13 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private static final int CUT_OFF_SECONDS = 60;
     private static int INITIAL_ARRAY_CAPACITY = 5000;
 
+    private final Clock clock;
     private AtomicReferenceArray<Transaction> transactionStore;
 
 
-    public TransactionRepositoryImpl() {
+    @Autowired
+    public TransactionRepositoryImpl(Clock clock) {
+        this.clock = clock;
         this.transactionStore = new AtomicReferenceArray<>(INITIAL_ARRAY_CAPACITY);
     }
 
@@ -39,7 +44,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         logger.debug("Saving transaction: {}", transaction);
 
         int index = getIndex();
-        logger.debug("Next index: {}", index);
+        logger.debug("Next Id: {}", index);
         transactionStore.set(index, transaction);
         transaction.setId(index);
         return transaction;
@@ -103,7 +108,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private boolean isOldTransaction(Transaction transaction) {
 
         Instant transactionTime = transaction.getTimeStamp();
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         long duration = Duration.between(transactionTime, now).getSeconds();
         return duration >= CUT_OFF_SECONDS;
     }
