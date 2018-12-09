@@ -55,6 +55,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
+            logger.debug("Index reached length of transaction store");
             //increase the capacity of the data store
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
