@@ -26,7 +26,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryImpl.class);
 
     private static final int CUT_OFF_SECONDS = 60;
-    private static int INITIAL_ARRAY_CAPACITY = 5000;
+    private static final int INITIAL_ARRAY_CAPACITY = 5000;
 
     private final Clock clock;
     private AtomicReferenceArray<Transaction> transactionStore;
@@ -52,12 +52,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     private int getIndex() {
 
-        for (int index = 0; index < transactionStore.length(); index++) {
-            Transaction transaction = transactionStore.get(index);
-            if (transaction == null) {
-                return index;
-            }
-        }
+//        for (int index = 0; index < transactionStore.length(); index++) {
+//            Transaction transaction = transactionStore.get(index);
+//            if (transaction == null) {
+//                return index;
+//            }
+//        }
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {

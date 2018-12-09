@@ -138,14 +138,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         return convertTransactionStatisticsModelToDto(transactionStatistics);
     }
 
-    @Override
-    public HttpStatus deleteTransactions() {
-
-        logger.debug("Deleting all transactions");
-        transactionRepository.deleteAllTransactions();
-        return HttpStatus.NO_CONTENT;
-    }
-
     private TransactionStatisticsDTO convertTransactionStatisticsModelToDto(TransactionStatistics transactionStatistics) {
 
         TransactionStatisticsDTO transactionStatisticsDTO = new TransactionStatisticsDTO();
@@ -156,4 +148,15 @@ public class StatisticsServiceImpl implements StatisticsService {
         transactionStatisticsDTO.setCount(transactionStatistics.getCount());
         return transactionStatisticsDTO;
     }
+
+
+    @Override
+    public HttpStatus deleteTransactions() {
+
+        logger.debug("Deleting all transactions");
+        transactionRepository.deleteAllTransactions();
+        return HttpStatus.NO_CONTENT;
+    }
+
+
 }
