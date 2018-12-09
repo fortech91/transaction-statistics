@@ -1,5 +1,6 @@
 package com.n26.statistics.service.implementation;
 
+import com.n26.statistics.dto.Response;
 import com.n26.statistics.dto.TransactionDTO;
 import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.model.Transaction;
@@ -57,8 +58,8 @@ public class StatisticsServiceImplTest {
         transactionDto.setAmount("456.76");
         transactionDto.setTimeStamp("2018-07-17T08:59:51.312Z");
 
-        HttpStatus httpStatus = statisticsService.addTransaction(transactionDto);
-        assertThat(httpStatus).isEqualTo(HttpStatus.NO_CONTENT);
+        Response response = statisticsService.addTransaction(transactionDto);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -68,8 +69,19 @@ public class StatisticsServiceImplTest {
         transactionDto.setAmount("456.76");
         transactionDto.setTimeStamp("2018-07-17T10:59:51.312Z");
 
-        HttpStatus httpStatus = statisticsService.addTransaction(transactionDto);
-        assertThat(httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        Response response = statisticsService.addTransaction(transactionDto);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    public void givenTransactionDetails_whenUnparseable_thenReturn422Status() throws Exception {
+
+        TransactionDTO transactionDto = new TransactionDTO();
+        transactionDto.setAmount("456.76h");
+        transactionDto.setTimeStamp("2018-07-17T10:59:51.312Z");
+
+        Response response = statisticsService.addTransaction(transactionDto);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 
@@ -80,8 +92,8 @@ public class StatisticsServiceImplTest {
         transactionDto.setAmount("456.76");
         transactionDto.setTimeStamp("2018-07-17T09:59:01.312Z");
 
-        HttpStatus httpStatus = statisticsService.addTransaction(transactionDto);
-        assertThat(httpStatus).isEqualTo(HttpStatus.CREATED);
+        Response response = statisticsService.addTransaction(transactionDto);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
@@ -98,7 +110,7 @@ public class StatisticsServiceImplTest {
 
         when(transactionRepository.getTransactions()).thenReturn(transactions);
 
-        TransactionStatisticsDTO statistics = statisticsService.getStatistics();
+        TransactionStatisticsDTO statistics = (TransactionStatisticsDTO)statisticsService.getStatistics().getBody();
 
         assertThat(statistics.getSum()).isEqualTo("1793.38");
         assertThat(statistics.getAvg()).isEqualTo("358.68");
@@ -121,8 +133,8 @@ public class StatisticsServiceImplTest {
 
         when(transactionRepository.getTransactions()).thenReturn(transactions);
 
-        HttpStatus status = statisticsService.deleteTransactions();
-        assertThat(status).isEqualTo(HttpStatus.NO_CONTENT);
+        Response response = statisticsService.deleteTransactions();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
 }

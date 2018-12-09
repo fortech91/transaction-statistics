@@ -1,5 +1,6 @@
 package com.n26.statistics.service.implementation;
 
+import com.n26.statistics.dto.Response;
 import com.n26.statistics.dto.TransactionDTO;
 import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.exception.TransactionException;
@@ -7,6 +8,7 @@ import com.n26.statistics.model.Transaction;
 import com.n26.statistics.model.TransactionStatistics;
 import com.n26.statistics.repository.TransactionRepository;
 import com.n26.statistics.service.StatisticsService;
+import com.n26.statistics.util.ResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Processes transaction data and computes the statistics.
+ * This service uses the UTC for time references as provided by the
+ * system clock. The statistics computed by this service are for transactions
+ * that occurred in the last 60 seconds.
+ *
  * @author FortunatusE
  * @date 12/7/2018
  */
@@ -44,36 +51,39 @@ public class StatisticsServiceImpl implements StatisticsService {
         this.clock = clock;
     }
 
+
+    /**
+     *{@inheritDoc}
+     */
     @Override
-    public HttpStatus addTransaction(TransactionDTO transactionDTO) {
+    public Response addTransaction(TransactionDTO transactionDTO) {
 
         logger.debug("Adding transaction: {}", transactionDTO);
 
         try {
-            Transaction transaction = convertTransactionDtoToModel(transactionDTO);
-            if (isOlderThan60Seconds(transaction)) {
+            Transaction transaction = validateAndConvertTransactionDtoToModel(transactionDTO);
+            if (isOldTransaction(transaction)) {
                 logger.debug("Transaction is older than 60 seconds and will be discarded");
-                return HttpStatus.NO_CONTENT;
+                return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
             }
             logger.debug("Transaction is still young and will be added");
             Transaction savedTransaction = transactionRepository.save(transaction);
             logger.info("Added transaction: {}", savedTransaction);
-            return HttpStatus.CREATED;
+            return ResponseUtils.createResponse(HttpStatus.CREATED);
 
         } catch (TransactionException exception) {
             logger.error(exception.getMessage());
-            return exception.getStatus();
+            return ResponseUtils.createResponse(exception.getStatus());
         }
     }
 
     /**
-     * Converts the transaction DTO to a domain model
-     *
-     * @param transactionDTO the dto to be converted
+     * Validates the transaction details and converts the DTO to a domain model.
+     * @param transactionDTO the transaction to be validated
      * @return the domain model
-     * @throws TransactionException if an error occurs during the conversion
+     * @throws TransactionException if any of the transaction data cannot be parsed or the time is in the future
      */
-    private Transaction convertTransactionDtoToModel(TransactionDTO transactionDTO) throws TransactionException {
+    private Transaction validateAndConvertTransactionDtoToModel(TransactionDTO transactionDTO) throws TransactionException {
 
         final BigDecimal amount;
         final Instant timeStamp;
@@ -86,7 +96,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             throw new TransactionException("Could not parse transaction data", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (isFutureTime(timeStamp)) {
+        if (isFutureDate(timeStamp)) {
             throw new TransactionException("Transaction date [" + timeStamp + "] is in the future and discarded", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         logger.debug("Amount: {}", amount);
@@ -96,7 +106,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         return transaction;
     }
 
-    private boolean isFutureTime(Instant instant) {
+    /**
+     * Checks if the given date instant is in the future
+     * @param instant the date instant
+     * @return true if the date instant is in the future
+     */
+    private boolean isFutureDate(Instant instant) {
 
         Instant currentTime = clock.instant();
         logger.debug("Current time: {}", currentTime);
@@ -105,7 +120,14 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
 
-    private boolean isOlderThan60Seconds(Transaction transaction) {
+    /**
+     * Checks if the given transaction is old.
+     * A transaction is considered old if the time stamp is not
+     * within the last 60 seconds.
+     * @param transaction the transaction
+     * @return true if the transaction is old
+     */
+    private boolean isOldTransaction(Transaction transaction) {
 
         logger.debug("Checking if transaction is older than last 60 secs");
         Instant timeStamp = transaction.getTimeStamp();
@@ -115,8 +137,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
 
+    /**
+     *{@inheritDoc}
+     */
     @Override
-    public TransactionStatisticsDTO getStatistics() {
+    public Response getStatistics() {
 
         logger.debug("Retrieving transaction statistics");
 
@@ -124,7 +149,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         logger.debug("Transactions length: {}", transactions.size());
 
         if (transactions.isEmpty()) {
-            return convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
+            TransactionStatisticsDTO transactionStatisticsDTO = convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
+            ResponseUtils.createResponse(HttpStatus.OK, transactionStatisticsDTO);
         }
         DoubleSummaryStatistics statistics = transactions.stream().collect(Collectors.summarizingDouble(transaction -> transaction.getAmount().doubleValue()));
 
@@ -134,8 +160,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         transactionStatistics.setMax(new BigDecimal(statistics.getMax()));
         transactionStatistics.setMin(new BigDecimal(statistics.getMin()));
         transactionStatistics.setCount(statistics.getCount());
-        logger.debug("Statistics: {}", statistics);
-        return convertTransactionStatisticsModelToDto(transactionStatistics);
+        TransactionStatisticsDTO transactionStatisticsDTO = convertTransactionStatisticsModelToDto(transactionStatistics);
+        logger.debug("Statistics: {}", transactionStatisticsDTO);
+        return ResponseUtils.createResponse(HttpStatus.OK, transactionStatisticsDTO);
+
+
     }
 
     private TransactionStatisticsDTO convertTransactionStatisticsModelToDto(TransactionStatistics transactionStatistics) {
@@ -150,12 +179,15 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
 
+    /**
+     *{@inheritDoc}
+     */
     @Override
-    public HttpStatus deleteTransactions() {
+    public Response deleteTransactions() {
 
         logger.debug("Deleting all transactions");
         transactionRepository.deleteAllTransactions();
-        return HttpStatus.NO_CONTENT;
+        return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
     }
 
 

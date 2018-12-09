@@ -1,5 +1,6 @@
 package com.n26.statistics.controller;
 
+import com.n26.statistics.dto.Response;
 import com.n26.statistics.dto.TransactionDTO;
 import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.model.TransactionStatistics;
@@ -29,22 +30,23 @@ public class StatisticsController {
     @PostMapping("/transactions")
     public ResponseEntity addTransaction(@RequestBody TransactionDTO transaction){
 
-        HttpStatus status = statisticsService.addTransaction(transaction);
-        return ResponseEntity.status(status).build();
+        Response response = statisticsService.addTransaction(transaction);
+        System.out.println("Response: "+response);
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
 
     @GetMapping("/statistics")
     public ResponseEntity getTransactionStatistics(){
 
-        TransactionStatisticsDTO statistics = statisticsService.getStatistics();
-        return ResponseEntity.ok(statistics);
+        Response response = statisticsService.getStatistics();
+        return ResponseEntity.status(response.getStatus()).body(response.getBody());
     }
 
     @DeleteMapping("/transactions")
     public ResponseEntity deleteTransactions(){
 
-        HttpStatus status = statisticsService.deleteTransactions();
-        return ResponseEntity.status(status).build();
+        Response response = statisticsService.deleteTransactions();
+        return ResponseEntity.status(response.getStatus()).build();
     }
 }

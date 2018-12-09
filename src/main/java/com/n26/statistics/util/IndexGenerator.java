@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author FortunatusE
  * @date 12/8/2018
  */
-public final class IndexCounter {
+public final class IndexGenerator {
 
     private static AtomicInteger counter = new AtomicInteger(0);
 
@@ -14,8 +14,8 @@ public final class IndexCounter {
         return counter.getAndIncrement();
     }
 
-    public static void resetCounter(int initialValue){
-        counter = new AtomicInteger(initialValue);
+    public static void resetCounter(int value){
+        counter = new AtomicInteger(value);
 
     }
 
