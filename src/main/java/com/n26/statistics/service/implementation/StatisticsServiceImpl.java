@@ -150,7 +150,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         if (transactions.isEmpty()) {
             TransactionStatisticsDTO transactionStatisticsDTO = convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
-            ResponseUtils.createResponse(HttpStatus.OK, transactionStatisticsDTO);
+            return ResponseUtils.createResponse(HttpStatus.OK, transactionStatisticsDTO);
         }
         DoubleSummaryStatistics statistics = transactions.stream().collect(Collectors.summarizingDouble(transaction -> transaction.getAmount().doubleValue()));
 

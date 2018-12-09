@@ -28,6 +28,8 @@ public class TransactionStatisticsDTO {
 	private long count;
 
 
+
+
 	public String getSum() {
 		return sum;
 	}
