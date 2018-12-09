@@ -2,7 +2,7 @@ package com.n26.statistics.repository.implementation;
 
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.repository.TransactionRepository;
-import com.n26.statistics.util.IndexCounter;
+import com.n26.statistics.util.IndexGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
+ * An memory-based transaction repository.
+ * This repository is implemented with an atomic data structure for thread-safety.
+ * To free memory, old transactions are nullified and removed when transactions are fetched
+ * and when the transactions are being copied from one transaction store to another
+ * as the transactions grow bigger.
+ *
+ *
  * @author FortunatusE
  * @date 12/7/2018
  */
@@ -38,6 +45,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         this.transactionStore = new AtomicReferenceArray<>(INITIAL_ARRAY_CAPACITY);
     }
 
+    /**
+     *{@inheritDoc}
+     */
     @Override
     public Transaction save(Transaction transaction) {
 
@@ -45,14 +55,21 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         int index = getNextIndex();
         logger.debug("Next Id: {}", index);
-        transactionStore.set(index, transaction);
         transaction.setId(index);
+        transactionStore.set(index, transaction);
         return transaction;
     }
 
+    /**
+     * Returns the next transaction index to be used in storing the transaction in the store.
+     * It uses an IndexGenerator to get the next index.
+     * This method ensures that the index returned is always in sync with the transaction store..
+     *
+     * @return the next index for transaction
+     */
     private int getNextIndex() {
 
-        int nextIndex = IndexCounter.nextIndex();
+        int nextIndex = IndexGenerator.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
             logger.debug("Index [{}] reached length of transaction store", nextIndex);
@@ -60,11 +77,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
             logger.debug("New transaction store capacity: {}", transactionStore.length());
-            nextIndex = IndexCounter.nextIndex();
+            nextIndex = IndexGenerator.nextIndex();
         }
         return nextIndex;
     }
 
+    /**
+     * Creates and returns a new transaction store.
+     * The transaction is created when the existing store has reached it's capacity.
+     * Existing transactions are copied to the store while discarding the old transactions.
+     * @param existingStore the existing store that will be replaced.
+     * @return the new transaction store
+     */
     private AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
 
         logger.debug("Creating new transaction store as existing one is already filled up");
@@ -85,11 +109,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         }
         int numOfCopiedTransactions = transactionStore.length() - numOfNullTransactions;
         logger.debug("Copied {} transactions to new store", numOfCopiedTransactions);
-        IndexCounter.resetCounter(numOfCopiedTransactions);
+        IndexGenerator.resetCounter(numOfCopiedTransactions);
         return newTransactionStore;
     }
 
 
+    /**
+     * {@inheritDoc}
+     * @return
+     */
     @Override
     public List<Transaction> getTransactions() {
 
@@ -111,6 +139,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return transactions;
     }
 
+
+/**
+ * Checks if the given transaction is old.
+ * @param transaction the transaction
+ * @return true if the transaction is old
+ * */
     private boolean isOldTransaction(Transaction transaction) {
 
         Instant transactionTime = transaction.getTimeStamp();
@@ -120,6 +154,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteAllTransactions() {
 
