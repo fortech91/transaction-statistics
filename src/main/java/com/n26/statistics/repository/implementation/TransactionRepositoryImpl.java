@@ -93,7 +93,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 if (isOldTransaction(transaction)) {
                     //discard the transaction by nullifying the reference
                     transactionStore.compareAndSet(index, transaction, null);
-//                    transactionStore.set(index, null);
                 } else {
                     transactions.add(transaction);
                 }
@@ -106,7 +105,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         Instant transactionTime = transaction.getTimeStamp();
         Instant now = Instant.now();
-//        Instant offSet = TimeUtil.getTimeOffset();
         long duration = Duration.between(transactionTime, now).getSeconds();
         return duration >= CUT_OFF_SECONDS;
     }
