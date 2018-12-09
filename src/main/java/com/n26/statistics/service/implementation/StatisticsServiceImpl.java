@@ -134,7 +134,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         transactionStatistics.setMax(new BigDecimal(statistics.getMax()));
         transactionStatistics.setMin(new BigDecimal(statistics.getMin()));
         transactionStatistics.setCount(statistics.getCount());
-        logger.debug("Statistics: {}", transactions);
+        logger.debug("Statistics: {}", statistics);
         return convertTransactionStatisticsModelToDto(transactionStatistics);
     }
 
