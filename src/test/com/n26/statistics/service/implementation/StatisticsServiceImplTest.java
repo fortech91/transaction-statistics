@@ -1,6 +1,7 @@
 package com.n26.statistics.service.implementation;
 
 import com.n26.statistics.dto.TransactionDTO;
+import com.n26.statistics.dto.TransactionStatisticsDTO;
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.repository.TransactionRepository;
 import com.n26.statistics.service.StatisticsService;
@@ -12,13 +13,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -58,7 +62,7 @@ public class StatisticsServiceImplTest {
     }
 
     @Test
-    public void givenTransactionDetails_whenTimeStampIsFutureDate_thenReturn422Status() throws Exception {
+    public void givenTransactionDetails_whenTimeIsInFuture_thenReturn422Status() throws Exception {
 
         TransactionDTO transactionDto = new TransactionDTO();
         transactionDto.setAmount("456.76");
@@ -81,11 +85,44 @@ public class StatisticsServiceImplTest {
     }
 
     @Test
-    public void getStatistics() throws Exception {
+    public void givenTransactions_whenWithinLast60Secs_thenReturnStatistics() throws Exception {
+
+        Transaction transaction1 = new Transaction(new BigDecimal("256.76"), Instant.parse("2018-07-17T09:59:01.312Z"));
+        Transaction transaction2 = new Transaction(new BigDecimal("346.57"), Instant.parse("2018-07-17T09:59:11.312Z"));
+        Transaction transaction3 = new Transaction(new BigDecimal("456.76"), Instant.parse("2018-07-17T09:59:21.312Z"));
+        Transaction transaction4 = new Transaction(new BigDecimal("576.53"), Instant.parse("2018-07-17T09:59:27.312Z"));
+        Transaction transaction5 = new Transaction(new BigDecimal("156.76"), Instant.parse("2018-07-17T09:59:31.312Z"));
+
+
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2, transaction3, transaction4, transaction5);
+
+        when(transactionRepository.getTransactions()).thenReturn(transactions);
+
+        TransactionStatisticsDTO statistics = statisticsService.getStatistics();
+
+        assertThat(statistics.getSum()).isEqualTo("1793.38");
+        assertThat(statistics.getAvg()).isEqualTo("358.68");
+        assertThat(statistics.getMax()).isEqualTo("576.53");
+        assertThat(statistics.getMin()).isEqualTo("156.76");
+        assertThat(statistics.getCount()).isEqualTo(5);
+
     }
 
     @Test
     public void deleteTransactions() throws Exception {
+
+        Transaction transaction1 = new Transaction(new BigDecimal("256.76"), Instant.parse("2018-07-17T09:59:01.312Z"));
+        Transaction transaction2 = new Transaction(new BigDecimal("366.57"), Instant.parse("2018-07-17T09:59:11.312Z"));
+        Transaction transaction3 = new Transaction(new BigDecimal("456.76"), Instant.parse("2018-07-17T09:59:21.312Z"));
+        Transaction transaction4 = new Transaction(new BigDecimal("536.53"), Instant.parse("2018-07-17T09:59:27.312Z"));
+        Transaction transaction5 = new Transaction(new BigDecimal("156.76"), Instant.parse("2018-07-17T09:59:31.312Z"));
+
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2, transaction3, transaction4, transaction5);
+
+        when(transactionRepository.getTransactions()).thenReturn(transactions);
+
+        HttpStatus status = statisticsService.deleteTransactions();
+        assertThat(status).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
 }
