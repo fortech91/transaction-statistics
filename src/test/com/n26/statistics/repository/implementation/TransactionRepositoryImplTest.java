@@ -53,10 +53,7 @@ public class TransactionRepositoryImplTest {
     @Test
     public void getTransactions() throws Exception {
     }
-
-    @Test
-    public void getTransactionStore() throws Exception {
-    }
+    
 
     @Test
     public void deleteAllTransactions() throws Exception {

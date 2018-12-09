@@ -1,6 +1,5 @@
 package com.n26.statistics.model;
 
-import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,7 +9,6 @@ import java.time.Instant;
  * @date 12/7/2018
  */
 
-@Data
 public class Transaction {
 
     private Integer id;
@@ -19,6 +17,30 @@ public class Transaction {
 
     public Transaction(BigDecimal amount, Instant timeStamp) {
         this.amount = amount;
+        this.timeStamp = timeStamp;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Instant getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Instant timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
  * @date 12/7/2018
  */
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionDTO {
 
@@ -21,4 +20,20 @@ public class TransactionDTO {
 
     @JsonProperty("timestamp")
     private String timeStamp;
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 }
