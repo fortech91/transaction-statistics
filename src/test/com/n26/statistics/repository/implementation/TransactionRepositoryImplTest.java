@@ -2,6 +2,7 @@ package com.n26.statistics.repository.implementation;
 
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.repository.TransactionRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class TransactionRepositoryImplTest {
         TransactionRepository transactionRepository(){
             return new TransactionRepositoryImpl(Clock.fixed(Instant.parse("2018-07-17T09:59:51.312Z"), ZoneOffset.UTC));
         }
+    }
+
+    @Before
+    public void setUp(){
+       transactionRepository.deleteAllTransactions();
     }
 
     @Test

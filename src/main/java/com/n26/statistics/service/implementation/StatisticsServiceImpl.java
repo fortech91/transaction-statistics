@@ -62,7 +62,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         try {
             Transaction transaction = validateAndConvertTransactionDtoToModel(transactionDTO);
-            if (isOldTransaction(transaction)) {
+            if (isOlderThanSixtySeconds(transaction)) {
                 logger.debug("Transaction is older than 60 seconds and will be discarded");
                 return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
             }
@@ -121,15 +121,14 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
     /**
-     * Checks if the given transaction is old.
-     * A transaction is considered old if the time stamp is not
+     * Checks if the given transaction is older than 60 secs.
      * within the last 60 seconds.
      * @param transaction the transaction
      * @return true if the transaction is old
      */
-    private boolean isOldTransaction(Transaction transaction) {
+    private boolean isOlderThanSixtySeconds(Transaction transaction) {
 
-        logger.debug("Checking if transaction is older than last 60 secs");
+        logger.debug("Checking if transaction is older than 60 secs");
         Instant timeStamp = transaction.getTimeStamp();
         Instant now = clock.instant();
         long duration = Duration.between(timeStamp, now).getSeconds();
