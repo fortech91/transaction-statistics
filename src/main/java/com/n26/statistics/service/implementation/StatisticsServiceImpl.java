@@ -110,7 +110,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         Instant timeStamp = transaction.getTimeStamp();
         Instant now = clock.instant();
         long duration = Duration.between(timeStamp, now).getSeconds();
-        return duration > 60;
+        return duration >= 60;
     }
 
 
