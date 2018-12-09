@@ -26,7 +26,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryImpl.class);
 
     private static final int CUT_OFF_SECONDS = 60;
-    private static final int INITIAL_ARRAY_CAPACITY = 500;
+    private static final int INITIAL_ARRAY_CAPACITY = 50;
 
     private final Clock clock;
     private AtomicReferenceArray<Transaction> transactionStore;
