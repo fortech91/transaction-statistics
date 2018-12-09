@@ -52,12 +52,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     private int getIndex() {
 
-//        for (int index = 0; index < transactionStore.length(); index++) {
-//            Transaction transaction = transactionStore.get(index);
-//            if (transaction == null) {
-//                return index;
-//            }
-//        }
+        for (int index = 0; index < transactionStore.length(); index++) {
+            Transaction transaction = transactionStore.get(index);
+            if (transaction == null) {
+                return index;
+            }
+        }
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
