@@ -14,4 +14,9 @@ public final class IndexCounter {
         return counter.getAndIncrement();
     }
 
+    public static void resetCounter(int initialValue){
+        counter = new AtomicInteger(initialValue);
+
+    }
+
 }

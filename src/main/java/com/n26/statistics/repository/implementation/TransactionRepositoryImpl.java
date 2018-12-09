@@ -43,27 +43,22 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         logger.debug("Saving transaction: {}", transaction);
 
-        int index = getIndex();
+        int index = getNextIndex();
         logger.debug("Next Id: {}", index);
         transactionStore.set(index, transaction);
         transaction.setId(index);
         return transaction;
     }
 
-    private int getIndex() {
+    private int getNextIndex() {
 
-        for (int index = 0; index < transactionStore.length(); index++) {
-            Transaction transaction = transactionStore.get(index);
-            if (transaction == null) {
-                return index;
-            }
-        }
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
             //increase the capacity of the data store
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
+            nextIndex = IndexCounter.nextIndex();
         }
         return nextIndex;
     }
@@ -73,13 +68,21 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         logger.debug("Creating new transaction store as existing one is already filled up");
 
         int arrayCapacity = existingStore.length() * 2;
+        AtomicReferenceArray<Transaction> newTransactionStore = new AtomicReferenceArray<>(arrayCapacity);
 
-        AtomicReferenceArray<Transaction> newTransactionStore = new AtomicReferenceArray<Transaction>(arrayCapacity);
-
+        int numOfNullTransactions = 0;
+        int newIndex = 0;
+        //copy transactions to new store
         for (int index = 0; index < existingStore.length(); index++) {
             Transaction transaction = existingStore.get(index);
-            newTransactionStore.set(index, transaction);
+            if (transaction != null) {
+                newTransactionStore.set(newIndex++, transaction);
+            } else {
+                ++numOfNullTransactions;
+            }
         }
+        int numOfCopiedTransactions = transactionStore.length() - numOfNullTransactions;
+        IndexCounter.resetCounter(numOfCopiedTransactions);
         return newTransactionStore;
     }
 
