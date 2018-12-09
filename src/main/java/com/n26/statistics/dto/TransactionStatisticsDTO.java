@@ -67,4 +67,15 @@ public class TransactionStatisticsDTO {
 	public void setCount(long count) {
 		this.count = count;
 	}
+
+	@Override
+	public String toString() {
+		return "TransactionStatisticsDTO{" +
+				"sum='" + sum + '\'' +
+				", avg='" + avg + '\'' +
+				", max='" + max + '\'' +
+				", min='" + min + '\'' +
+				", count=" + count +
+				'}';
+	}
 }

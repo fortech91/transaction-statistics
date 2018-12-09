@@ -43,4 +43,13 @@ public class Transaction {
     public void setTimeStamp(Instant timeStamp) {
         this.timeStamp = timeStamp;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", timeStamp=" + timeStamp +
+                '}';
+    }
 }

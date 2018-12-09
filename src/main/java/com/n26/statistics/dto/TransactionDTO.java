@@ -36,4 +36,12 @@ public class TransactionDTO {
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "amount='" + amount + '\'' +
+                ", timeStamp='" + timeStamp + '\'' +
+                '}';
+    }
 }

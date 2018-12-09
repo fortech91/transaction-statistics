@@ -38,7 +38,7 @@ public class TransactionRepositoryImplTest {
     }
 
     @Test
-    public void givenNewTransaction_thenSave() throws Exception {
+    public void givenNewTransactions_thenSave() throws Exception {
 
         Transaction transaction1 = new Transaction(new BigDecimal("256.76"), Instant.parse("2018-07-17T09:59:01.312Z"));
         Transaction savedTransaction1 = transactionRepository.save(transaction1);
@@ -53,7 +53,7 @@ public class TransactionRepositoryImplTest {
     @Test
     public void getTransactions() throws Exception {
     }
-    
+
 
     @Test
     public void deleteAllTransactions() throws Exception {

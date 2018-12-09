@@ -66,4 +66,15 @@ public class TransactionStatistics {
 		setCount(0L);
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "TransactionStatistics{" +
+				"sum=" + sum +
+				", avg=" + avg +
+				", max=" + max +
+				", min=" + min +
+				", count=" + count +
+				'}';
+	}
 }
