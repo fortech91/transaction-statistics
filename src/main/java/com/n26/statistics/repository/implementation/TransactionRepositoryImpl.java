@@ -55,10 +55,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
-            logger.debug("Index reached length of transaction store");
+            logger.debug("Index [{}] reached length of transaction store", nextIndex);
             //increase the capacity of the data store
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
+            logger.debug("New transaction store capacity: {}", transactionStore.length());
             nextIndex = IndexCounter.nextIndex();
         }
         return nextIndex;
@@ -83,6 +84,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
         }
         int numOfCopiedTransactions = transactionStore.length() - numOfNullTransactions;
+        logger.debug("Copied {} transactions to new store", numOfCopiedTransactions);
         IndexCounter.resetCounter(numOfCopiedTransactions);
         return newTransactionStore;
     }
