@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
+    private static final int ONE_MINUTE = 60;
     private static final Logger logger = LoggerFactory.getLogger(StatisticsServiceImpl.class);
 
     private final TransactionRepository transactionRepository;
@@ -55,8 +56,8 @@ public class StatisticsServiceImpl implements StatisticsService {
                 return HttpStatus.NO_CONTENT;
             }
             logger.debug("Transaction is still young and will be added");
-            transactionRepository.save(transaction);
-            logger.info("Transaction has been saved");
+            Transaction savedTransaction = transactionRepository.save(transaction);
+            logger.info("Transaction {} has been saved", savedTransaction);
             return HttpStatus.CREATED;
 
         } catch (TransactionException exception) {
@@ -85,7 +86,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             throw new TransactionException("Could not parse data", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (isFutureDate(timeStamp)) {
+        if (isFutureTime(timeStamp)) {
             throw new TransactionException("Transaction date [" + timeStamp + "] is in the future and discarded", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         logger.debug("Amount: {}", amount);
@@ -95,7 +96,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         return transaction;
     }
 
-    private boolean isFutureDate(Instant instant) {
+    private boolean isFutureTime(Instant instant) {
 
         Instant currentTime = clock.instant();
         logger.debug("Current time: {}", currentTime);
@@ -110,7 +111,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         Instant timeStamp = transaction.getTimeStamp();
         Instant now = clock.instant();
         long duration = Duration.between(timeStamp, now).getSeconds();
-        return duration >= 60;
+        return duration >= ONE_MINUTE;
     }
 
 
@@ -121,11 +122,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         List<Transaction> transactions = transactionRepository.getTransactions();
         logger.debug("Transactions length: {}", transactions.size());
+
         if (transactions.isEmpty()) {
             return convertTransactionStatisticsModelToDto(new TransactionStatistics().initialValue());
         }
-
         DoubleSummaryStatistics statistics = transactions.stream().collect(Collectors.summarizingDouble(transaction -> transaction.getAmount().doubleValue()));
+
         TransactionStatistics transactionStatistics = new TransactionStatistics();
         transactionStatistics.setSum(new BigDecimal(statistics.getSum()));
         transactionStatistics.setAvg(new BigDecimal(statistics.getAverage()));

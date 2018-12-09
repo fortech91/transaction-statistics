@@ -3,7 +3,6 @@ package com.n26.statistics.repository.implementation;
 import com.n26.statistics.model.Transaction;
 import com.n26.statistics.repository.TransactionRepository;
 import com.n26.statistics.util.IndexCounter;
-import com.n26.statistics.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -35,14 +34,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public void save(Transaction transaction) {
+    public Transaction save(Transaction transaction) {
 
         logger.debug("Saving transaction: {}", transaction);
 
         int index = getIndex();
         logger.debug("Next index: {}", index);
         transactionStore.set(index, transaction);
-        logger.info("Saved transaction: {}", transaction);
+        transaction.setId(index);
+        return transaction;
     }
 
     private int getIndex() {
@@ -56,8 +56,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         int nextIndex = IndexCounter.nextIndex();
 
         if (nextIndex == transactionStore.length()) {
-            logger.debug("Reached length of array");
-            //increase the capacity of the array
+            //increase the capacity of the data store
             AtomicReferenceArray<Transaction> newTransactionStore = createNewTransactionStore(transactionStore);
             transactionStore = newTransactionStore;
         }
@@ -109,16 +108,13 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return duration >= CUT_OFF_SECONDS;
     }
 
-    @Override
-    public AtomicReferenceArray<Transaction> getTransactionStore() {
-        return transactionStore;
-    }
 
     @Override
     public void deleteAllTransactions() {
 
         logger.debug("Deleting all transactions");
         for (int index = 0; index < transactionStore.length(); index++) {
+            //nullify all transaction references
             transactionStore.set(index, null);
         }
         logger.warn("Deleted all transactions");

@@ -40,7 +40,7 @@ public class StatisticsServiceImplTest {
 
 
     @TestConfiguration
-    static class ServiceProviderServiceConfig{
+    static class StatisticsServiceConfig{
 
         @Bean
         StatisticsService statisticsService(){

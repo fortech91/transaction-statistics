@@ -3,7 +3,7 @@ package com.n26.statistics.repository;
 import com.n26.statistics.model.Transaction;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+
 
 /**
  * @author FortunatusE
@@ -11,11 +11,9 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public interface TransactionRepository {
 
-    void save(Transaction transaction);
+    Transaction save(Transaction transaction);
 
     List<Transaction> getTransactions();
-
-    AtomicReferenceArray<Transaction> getTransactionStore();
 
     void deleteAllTransactions();
 }

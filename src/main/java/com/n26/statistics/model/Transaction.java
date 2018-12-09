@@ -1,12 +1,9 @@
 package com.n26.statistics.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * @author FortunatusE
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class Transaction {
 
+    private Integer id;
     private BigDecimal amount;
     private Instant timeStamp;
 
