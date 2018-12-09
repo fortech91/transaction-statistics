@@ -64,7 +64,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return nextIndex;
     }
 
-    private synchronized AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
+    private AtomicReferenceArray<Transaction> createNewTransactionStore(AtomicReferenceArray<Transaction> existingStore) {
 
         logger.debug("Creating new transaction store as existing one is already filled up");
 
