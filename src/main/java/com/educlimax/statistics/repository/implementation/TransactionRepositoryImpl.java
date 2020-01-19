@@ -1,8 +1,8 @@
-package com.n26.statistics.repository.implementation;
+package com.educlimax.statistics.repository.implementation;
 
-import com.n26.statistics.model.Transaction;
-import com.n26.statistics.repository.TransactionRepository;
-import com.n26.statistics.util.IndexGenerator;
+import com.educlimax.statistics.model.Transaction;
+import com.educlimax.statistics.repository.TransactionRepository;
+import com.educlimax.statistics.util.IndexGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.n26.statistics.model;
+package com.educlimax.statistics.model;
 
 
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.n26.statistics.exception;
+package com.educlimax.statistics.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,6 +1,6 @@
-package com.n26.statistics.util;
+package com.educlimax.statistics.util;
 
-import com.n26.statistics.dto.Response;
+import com.educlimax.statistics.dto.Response;
 import org.springframework.http.HttpStatus;
 
 /**

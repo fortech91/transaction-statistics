@@ -1,4 +1,4 @@
-package com.n26.statistics.util;
+package com.educlimax.statistics.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

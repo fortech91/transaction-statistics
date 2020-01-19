@@ -1,7 +1,7 @@
-package com.n26.statistics.service;
+package com.educlimax.statistics.service;
 
-import com.n26.statistics.dto.Response;
-import com.n26.statistics.dto.TransactionDTO;
+import com.educlimax.statistics.dto.Response;
+import com.educlimax.statistics.dto.TransactionDTO;
 
 /**
  *  Processes transaction data and computes the statistics

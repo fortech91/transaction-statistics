@@ -1,12 +1,9 @@
-package com.n26.statistics.controller;
+package com.educlimax.statistics.controller;
 
-import com.n26.statistics.dto.Response;
-import com.n26.statistics.dto.TransactionDTO;
-import com.n26.statistics.dto.TransactionStatisticsDTO;
-import com.n26.statistics.model.TransactionStatistics;
-import com.n26.statistics.service.StatisticsService;
+import com.educlimax.statistics.dto.Response;
+import com.educlimax.statistics.dto.TransactionDTO;
+import com.educlimax.statistics.service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.n26.statistics.dto;
+package com.educlimax.statistics.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

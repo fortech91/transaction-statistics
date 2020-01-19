@@ -1,5 +1,6 @@
 package com.n26;
 
+import com.educlimax.Application;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

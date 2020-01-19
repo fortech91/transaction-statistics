@@ -1,4 +1,4 @@
-package com.n26.statistics.controller;
+package com.educlimax.statistics.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

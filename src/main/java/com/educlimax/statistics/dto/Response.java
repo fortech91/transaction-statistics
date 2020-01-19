@@ -1,4 +1,4 @@
-package com.n26.statistics.dto;
+package com.educlimax.statistics.dto;
 
 import org.springframework.http.HttpStatus;
 

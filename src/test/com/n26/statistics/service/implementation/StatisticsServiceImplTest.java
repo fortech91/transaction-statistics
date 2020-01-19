@@ -1,11 +1,12 @@
 package com.n26.statistics.service.implementation;
 
-import com.n26.statistics.dto.Response;
-import com.n26.statistics.dto.TransactionDTO;
-import com.n26.statistics.dto.TransactionStatisticsDTO;
-import com.n26.statistics.model.Transaction;
-import com.n26.statistics.repository.TransactionRepository;
-import com.n26.statistics.service.StatisticsService;
+import com.educlimax.statistics.dto.Response;
+import com.educlimax.statistics.dto.TransactionDTO;
+import com.educlimax.statistics.dto.TransactionStatisticsDTO;
+import com.educlimax.statistics.model.Transaction;
+import com.educlimax.statistics.repository.TransactionRepository;
+import com.educlimax.statistics.service.StatisticsService;
+import com.educlimax.statistics.service.implementation.StatisticsServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

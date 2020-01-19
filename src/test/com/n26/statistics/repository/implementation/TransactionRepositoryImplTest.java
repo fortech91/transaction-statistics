@@ -1,7 +1,8 @@
 package com.n26.statistics.repository.implementation;
 
-import com.n26.statistics.model.Transaction;
-import com.n26.statistics.repository.TransactionRepository;
+import com.educlimax.statistics.model.Transaction;
+import com.educlimax.statistics.repository.TransactionRepository;
+import com.educlimax.statistics.repository.implementation.TransactionRepositoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

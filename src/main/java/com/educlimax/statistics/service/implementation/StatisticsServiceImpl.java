@@ -1,14 +1,14 @@
-package com.n26.statistics.service.implementation;
+package com.educlimax.statistics.service.implementation;
 
-import com.n26.statistics.dto.Response;
-import com.n26.statistics.dto.TransactionDTO;
-import com.n26.statistics.dto.TransactionStatisticsDTO;
-import com.n26.statistics.exception.TransactionException;
-import com.n26.statistics.model.Transaction;
-import com.n26.statistics.model.TransactionStatistics;
-import com.n26.statistics.repository.TransactionRepository;
-import com.n26.statistics.service.StatisticsService;
-import com.n26.statistics.util.ResponseUtils;
+import com.educlimax.statistics.dto.Response;
+import com.educlimax.statistics.dto.TransactionDTO;
+import com.educlimax.statistics.dto.TransactionStatisticsDTO;
+import com.educlimax.statistics.exception.TransactionException;
+import com.educlimax.statistics.model.Transaction;
+import com.educlimax.statistics.model.TransactionStatistics;
+import com.educlimax.statistics.repository.TransactionRepository;
+import com.educlimax.statistics.service.StatisticsService;
+import com.educlimax.statistics.util.ResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

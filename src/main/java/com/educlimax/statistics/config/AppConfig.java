@@ -1,4 +1,4 @@
-package com.n26.statistics.config;
+package com.educlimax.statistics.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

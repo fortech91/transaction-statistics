@@ -1,6 +1,6 @@
-package com.n26.statistics.repository;
+package com.educlimax.statistics.repository;
 
-import com.n26.statistics.model.Transaction;
+import com.educlimax.statistics.model.Transaction;
 
 import java.util.List;
 
