@@ -1,4 +1,4 @@
-package com.n26.statistics.service.implementation;
+package com.educlimax.statistics.service.implementation;
 
 import com.educlimax.statistics.dto.Response;
 import com.educlimax.statistics.dto.TransactionDTO;

@@ -1,4 +1,4 @@
-package com.n26.statistics.repository.implementation;
+package com.educlimax.statistics.repository.implementation;
 
 import com.educlimax.statistics.model.Transaction;
 import com.educlimax.statistics.repository.TransactionRepository;
